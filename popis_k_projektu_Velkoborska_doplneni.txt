@@ -1,0 +1,94 @@
+Nejprve jsem si  vytvořila tmp tabulky – tmp_JV_..., kde jsem přejmenovala zemi Czech Republic na Czechia a město Prague na Praha a z těch jsem poté čerpala data.
+Tabulka tmp_JV_countries_pr”
+1)	vytvořila jsem sloupec ‘capital_city’, který budu potřebovat k propojení  do tabulky tmp_JV_weather_pr přes sloupec ‘city_new’  (tento sloupec, kde přejmenovávám město z Prague na Praha,  tvořím v tabulce tmp_JV_weather_pr)
+2)	sloupec ‘population_density’ tvořím pro projekt
+3)	sloupec ‘media_age_2018’ tvořím pro project
+4)	sloupec ‘iso3’ budu potřebovat k propojení s tabulkou tmp_JV_life_expectancy_pr                 pro výpočet rozdílu dožití
+5)	vytvořila jsem si sloupec ‘country_new’, kde jsem přejmenovala Czech Republic na Czechia, dále sloupec ‘country’, dle kterého jsem vyfiltrovala právě Czech republic k přejmenování.
+
+Tabulka tmp_JV_covid_test_pr
+1)	sloupec ‘test_performed’ je k určení provedených testů
+2)	sloupec ‘date’ – k napárování dle data na finální tabulku  dle sloupce ‘country’
+3)	tvorba nového  sloupce ‘country_new ‘ – abych mohla zgrupovat dle země (vč. přejmenované Czech Republic na Czechia)
+Tabulka tmp_JV_economies_pr
+1)	sloupec  ‘year’ budu potřebovat do finální tabulky ke zjištění nejaktuálnějšího roku, kdy byla data sloupce ‘GDP’, ‘gini’ a ‘mortaliy_under ‘5 (ne všechny země měly posledni uvedaná data v roce 2020, některé země měly poslední data v dřívějších letech)
+2)	sloupec  ‘mortaliy_under5’ pro project
+3)	sloupce ‘country’ pro přiřazení do finální tabulky 
+4)	sloupec ‘GDP’ pro project
+5)	sloupec  ‘population’ pro výpočet GDP na obyvatele
+6)	sloupec  ‘gini’ pro project 
+7)	tvorba nového  sloupce ‘country_new’  – abych mohla zgrupovat dle země nebo nebo spojit tabulky ve finální tabulce (vč. přejmenované Czech Republic na Czechia)
+
+Tabulka tmp_JV_life_expectancy_pr
+1)	sloupec  ‘index’ – ten tam mám nějak navíc, k ničemu ho nepotřebuji
+2)	sloupec  ‘country’ pro přiřazení do finální tabulky
+3)	sloupec  ‘iso3’ pro spojení s tabulkou tmp_JV_countries_pr,
+4)	 sloupec  ‘year’ budu potřebovat pro tvorbu tabulky, abych mohla vypočítat rozdíl dožití 2015 a 1965
+5)	sloupec  ‘life_expectancy’ je potřeba take pro výpočet rozdílu dožití
+6)	tvorba nového  sloupce ‘country_new’  – abych mohla spojit tabulky ve finální tabulce (vč. přejmenované Czech Republic na Czechia)
+
+Tabulka tmp_JV_religions_pr
+1)	sloupec ‘country’ pro spojení tabulkl dle ‘country’
+2)	sloupec ‘religion’ pro vyfiltrování náboženství ve finální tabulce
+3)	sloupec ‘population’ pro výpočet podílu dle jednotlivých náboženství v jedntlivých zemích                 ve finální tabulce, 
+4)	tvorba nového  sloupce country_new  – abych mohla spojit tabulky ve finální tabulce (vč. přejmenované Czech Republic na Czechia)
+
+Tabulka tmp_JV_weather_pr
+1)	sloupec ‘city’ – pro spojení s tabulkou tmp_JV_countries dle sloupce ‘capital_city’ a následně propojit dle sloupce ‘country’ s dalšími tabulkami ve finální tabulce
+2)	sloupec ‘date’ pro spojení dle ‘data’ s ostatními tabulkami ve finální tabulce
+3)	sloupec ‘temp’ pro výpočet průměrné denní teploty 
+4)	sloupec ‘time’ pro vyfiltrování času pro určení dne – nikoliv noci (pro výpočet denní teploty)
+5)	sloupec ‘rain’ pro výpočet nenulových srážek
+6)	sloupec  ‘gust’ pro výpočet maximální síly větru v nárazech
+7)	tvorba nového sloupce ‘city_new’ (přejmenovala jsem Prague na Praha) pro spojení tabulky s tabulkou tmp_JV_countries_pr přes  sloupec ‘capital_city’ a dále pro spojení tabulek přes ‘country’ do finální tabulky 
+Problém:
+1)	V některých tabulkách bylo nutno přejmenovat Czech Republic na Czechia, abych mohla spojit všechny tabulky projektu (countries, covid_tests, economies, life_expectancy, religions). V tabulce weather bylo nutno přejmenovat Prague na Praha, abych mohla propojit tabulky.
+2)	V tabulce economies ve sloupcích GDP, gini a mortaliy_under5 nejsou u jednotlivých zemí uvedeny hodnoty ke všem rokům stejně (např. všechny data zemí k roku 2019). Proto jsem musela vyfiltrovat nejaktuálnější  rok každé země a poté hodnotu tohoto roku přiřadit konkrétní zemi.
+Pak jsem si vytvořila WITH, který jsem následně přetvořila na VIEW v_final_SQL_JV_1 a nakonec            z VIEW vytvořila finální tabulku t_Jana_Velkoborska_projekt_SQl_final.
+Dále jsem tvořila sloupce:
+1)	promenna_koeficient 
+Vypočítala jsem si koeficient počtu nakažených v závislosti na počtu nakažených, populace a počtu provedených testů na 100 tis. obyvatel. Po té jsem částku vynásobila 1000, aby výsledný koeficient nebyl příliš malé číslo.
+2)	casova_promenna – vytvořila jsem si pro víkend binární proměnnou 1, pro ostatní dny 0 a pro roční období od slunovratu do rovnodennosti jsem vytvořila proměnnou:
+0	 od 21.12. příslušného roku do 20.3. následujícího roku
+1	 od 21.3. do 20.6. příslušného roku
+2 	od 21.6. do 22.9. příslušného roku
+3 	od 23.9. do 20.12. příslušného roku
+3)	 specificka_promenna – zde jsem vyselektovala hustotu zalidnění a jelikož ve sloupci mortaliy_under5 byly nodnoty NULL, dala jsem podmínku, aby se do selectu nepromítly všechny řádky s touto hodnotou (vyfiltrování chybějících udajů).
+4)	GDP – vypočítala jsem HDP na obyvatele, kde GDP sloupec nebyl NULL (vyfiltrováni chybějících údajů). Jelikož každá země měla aktuální GDP v jiném roce, vybrala jsem GDP          z posledního známého roku a zgrupovala dle country.
+5)	gini – vybrala jsem gini koeficinet, kde gini sloupec nebyl NULL (vyfiltrováni chybějících udajů). Jelikož každá země měla aktuální koeficient v jiném roce, vybrala jsem koeficient          z posledního známého roku a zgrupovala dle country.
+6)	umrtnost – vybrala jsem hodnoty, kde sloupec dětská úmrtnost nebyl NULL (vyfiltrováni chybějících údajů). 
+7)	median – vybrala jsem sloupec median, kde hodnota nebyla NULL (vyfiltrováni chybějících údajů)
+8)	nabozenstvi – vybrala jsem podíl jednotlivých náboženství, spočítala z tabulky lookup_table a dala podmínku, že populace nemůže být NULL, jelikož nulou nelze dělit. Součty jednotlivých podílů někdy nedají 100%, jelikož někdo se může hlásit k vice náboženstvím a někdo se naopak nehlásí k žádnému.
+9)	doziti – vytvorila jsem si jednotlivé sloupce dožití od roku 1965 až 2015 a poté spočítala rozdíl dožití mezi nimi
+10)	teplota – vypočítala jsem průměrnou denní teplotu mezi časy 6:00 a 18:00 a zgrupovala dle data a města
+11)	hodiny_srazky – vypočítala jsem počet hodin za celý den, kdy byly srážky nenulové, zgrupovala dle data a města
+12)	naraz – převedla jsem si datový typ sloupce gust z textu na int, abych mohla zjistit maximum z toho sloupce, zgrupovala dle data a města
+Ukázka z finální tabulky”
+1)	výběr všech dat 
+SELECT
+	*
+FROM t_Jana_Velkoborska_projekt_SQL_final
+
+2)	výběr počet hodin nenulových srážek v České republice
+SELECT
+	pocet_hodin
+FROM t_Jana_Velkoborska_projekt_SQL_final
+WHERE country ‘Czechia’
+
+
+
+
+3)	výběr podílu náboženství seřazeno dle největšího podílu
+SELECT
+	podil_nabozenstvi
+FROM t_Jana_Velkoborska_projekt_SQL_final
+ORDER BY podil_nabozenstvi DESC
+
+4)	výběr hustoty zalidnění a GDP na obyvatele v Afghánistánu seřazeno dle hustoty zalidnění vzestupně a GDP sestupně
+SELECT
+	hustota_zalidneni,
+	HDP_na_obyvatele
+	FROM t_Jana_Velkoborska_projekt_SQL_final
+	WHERE country  = ‘Afghanistan’
+	ORDER BY hustota_zalidneni, HDP_na_obyvatele DESC
+
