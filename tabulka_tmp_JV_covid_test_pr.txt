@@ -1,0 +1,8 @@
+CREATE TABLE tmp_JV_covid_test_pr AS 
+	SELECT
+		tests_performed,
+		date,
+		CASE WHEN country = 'Czech Republic' THEN 'Czechia'
+			ELSE SUBSTRING(country,1)
+		END AS country_new
+FROM covid19_tests ct 
