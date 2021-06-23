@@ -1,0 +1,12 @@
+CREATE TABLE tmp_JV_economies_pr AS 
+	SELECT
+		year,
+		mortaliy_under5,
+		country,
+		GDP,
+		population,
+		gini,
+		CASE WHEN country = 'Czech Republic' THEN 'Czechia'
+			ELSE SUBSTRING(country,1)
+		END AS country_new
+FROM economies e 
