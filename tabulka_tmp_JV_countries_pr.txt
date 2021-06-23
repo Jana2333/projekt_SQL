@@ -1,0 +1,11 @@
+CREATE TABLE tmp_JV_countries_pr AS 
+	SELECT
+		country,
+		capital_city,
+		population_density,
+		median_age_2018,
+		iso3,
+		CASE WHEN country = 'Czech Republic' THEN 'Czechia'
+			ELSE SUBSTRING(country,1)
+		END AS country_new
+FROM countries c 
