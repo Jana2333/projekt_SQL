@@ -1,0 +1,12 @@
+CREATE TABLE tmp_JV_weather_pr AS 
+	SELECT
+		city,
+		date,
+		temp,
+		time,
+		rain,
+		gust,
+		CASE WHEN city = 'Prague' THEN 'Praha'
+			ELSE SUBSTRING(city,1)
+		END AS city_new
+FROM weather w 
