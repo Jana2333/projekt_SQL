@@ -1,0 +1,11 @@
+CREATE TABLE tmp_JV_life_expectancy_pr AS 
+	SELECT
+		'index',
+		country,
+		iso3,
+		year,
+		life_expectancy,
+		CASE WHEN country = 'Czech Republic' THEN 'Czechia'
+			ELSE SUBSTRING(country,1)
+		END AS country_new
+FROM life_expectancy le 
